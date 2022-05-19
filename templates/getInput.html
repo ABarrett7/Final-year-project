@@ -1,50 +1,49 @@
-<!doctype html><!--HTML5 doctype declaration -->
-<html lang="en"><!--default language of the document content -->
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Phishing Url Detection</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style>
 
-    <head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<!--character encoding for the document (Unicode) -->
-			<link href="css/normalize.css" rel="stylesheet" />
-			<link href="css/stylesheet.css" rel="stylesheet" />
+    </style>
+  </head>
+  <body>
 
-	</head>
+    <center style="margin-top: 90px;">
+     <h1 class="text-black">Phishing Detection System</h1>
+      <div class="single-url">
+      <div class="input-group input-group-lg" style="width: 800px;margin-top: 50px">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroup-sizing-lg">Enter a URL:</span>
+        </div>
+        <input type="text" class="form-control" id="url"   value="">
+          <button type="submit" class="btn getResult btn-primary btn-lg mb-4" style="margin-left: 15px">Submit</button>
 
-<body>
-<!--Markup all web page content inside the 'body' tags -->
-	<div id="wrapper">
-	<a id="top"></a>
-	<!--The 'wrapper' contains all the page content-->
+      </div>
+    </div>
+      <span class="text-black">If you want see the result of single URL. You can enter a single URL in the field above.</span>
+    </div>
+  </div>
+        <div class=""></div>
+        <div class="score"></div>
+      <div class="result"></div>
 
-    <header><!--The main heading for the page -->
-		<center>
-		<h1>Final year project</h1>
-		</center>
-		<center>
-		<h2>Phishing detection system</h2>
-		</center>
-	</header>
-<!--The main page content -->
-		<main>
-		<div class="single-url">
-			<div class="input-group input-group-lg" style="width: 800px;margin-top: 50px">
-				<div class="input-group-prepend">
-					<span class="input-group-text" id="inputGroup-sizing-lg">Enter a URL:</span>
-				</div>
-				<input type="text" class="form-control" id="url"   value="">
-				<button type="submit" class="btn getResult btn-primary btn-lg mb-2" style="margin-left: 10px">Submit</button>
-				</div>
-			<div class="result"></div>
-
-		</div>
-		</main>
-<!--Close main page content -->
-
-		<script>
+    </center>
 
 
 
-   document.getElementsByClassName("getResult")[0].addEventListener("click",result);
+  </body>
+  <script>
+
+
+
+   document.getElementsByClassName("getResult", "score")[0].addEventListener("click",result);
+   function score(){
+
+   }
    function result(){
-
      var div = document.querySelector(".result");
       var urlname = document.getElementById('url').value;
  		$.ajax({
@@ -55,6 +54,8 @@
  			url : '/result'
  		})
  		.done(function(data) {
+             var newHTML = '<h3 class="text-black mt-4">Accuracy score is'+score+'</h3>';
+             div.innerHTML=  newHTML;
 
  			if (data.error) {
  				alert(data.error);
@@ -72,8 +73,8 @@
 
 $(document).ready(function(){
 
-$(".single").on('click',function(){
 
+$(".single").on('click',function(){
 
 $(".single-url").show();
 });
@@ -82,14 +83,4 @@ $(".single-url").show();
 });
 
   </script>
-
-
-
-	<div id="footer"><!--Footer content -->
-		<small>&copy; 2022, author, Aidan Barrett</small>
-		<p><a href="#top">Go to top</a></p>
-	</div>
-<a href="mailto:ab1913@brighton.ac.uk">Email Aidan Barrett</a>
-	</div><!--Close 'wrapper' div -->
-</body><!--Close 'body' -->
-</html><!--Close 'html' -->
+</html>
