@@ -2,11 +2,6 @@ import re
 from bs4 import BeautifulSoup
 import requests
 
-# Calculates number of months
-def diff_month(d1, d2):
-    return (d1.year - d2.year) * 12 + d1.month - d2.month
-
-
 # Generate data set by extracting the features from the URL
 def generate_data_set(url):
     data_set = []
@@ -40,15 +35,15 @@ def generate_data_set(url):
     except:
         global_rank = -1
 
-    # 1.URL_Length
+    # 1.URL_Length, if URL is longer than 75, more likely to be a phisihing URL
     if len(url) < 50:
-        data_set.append(1)
+        data_set.append(-1)
     elif len(url) >= 50 and len(url) <= 75:
         data_set.append(0)
     else:
-        data_set.append(-1)
+        data_set.append(1)
 
-    # 2.Shortining_Service
+    # 2.Shortening_Service, phishing sites are more likely to use this service
     match = re.search('bit\.ly|goo\.gl|shorte\.st|go2l\.ink|x\.co|ow\.ly|t\.co|tinyurl|tr\.im|is\.gd|cli\.gs|'
                       'yfrog\.com|migre\.me|ff\.im|tiny\.cc|url4\.eu|twit\.ac|su\.pr|twurl\.nl|snipurl\.com|'
                       'short\.to|BudURL\.com|ping\.fm|post\.ly|Just\.as|bkite\.com|snipr\.com|fic\.kr|loopt\.us|'
@@ -66,60 +61,60 @@ def generate_data_set(url):
     if re.findall("@", url):
         data_set.append(url)
     else:
-        data_set.append(1)
+        data_set.append(-1)
 
     # 4.double_slash_redirecting
     list = [x.start(0) for x in re.finditer('//', url)]
     if list[len(list) - 1] > 6:
         data_set.append(list)
     else:
-        data_set.append(1)
+        data_set.append(-1)
 
     # 5.Prefix_Suffix
     if re.findall(r"https?://[^\-]+-[^\-]+/", url):
         data_set.append(url)
     else:
-        data_set.append(1)
+        data_set.append(-1)
 
     # 6.SSLfinal_State
     try:
         if response.text:
-            data_set.append(1)
+            data_set.append(-1)
     except:
-        data_set.append(-1)
+        data_set.append(1)
 
 
     # 7. port
     try:
         port = domain.split(":")[1]
         if port:
-            data_set.append(-1)
-        else:
             data_set.append(1)
+        else:
+            data_set.append(-1)
     except:
-        data_set.append(1)
+        data_set.append(-1)
 
     # 8. HTTPS_token
     if re.findall(r"^https://", url):
-        data_set.append(1)
-    else:
         data_set.append(-1)
+    else:
+        data_set.append(1)
 
     # 9. Submitting_to_email
     if response == "":
-        data_set.append(-1)
+        data_set.append(1)
     else:
         if re.findall(r"[mail\(\)|mailto:?]", response.text):
-            data_set.append(1)
-        else:
             data_set.append(-1)
+        else:
+            data_set.append(1)
 
     # 10. Abnormal_URL
     if response == "":
         data_set.append(response)
     else:
         if response.text == "":
-            data_set.append(1)
+            data_set.append(-1)
         else:
             data_set.append(response.text)
 
@@ -128,25 +123,27 @@ def generate_data_set(url):
         data_set.append(response)
     else:
         if len(response.history) <= 1:
-            data_set.append(-1)
+            data_set.append(1)
         elif len(response.history) <= 4:
             data_set.append(0)
         else:
-            data_set.append(1)
-
-
-    # 12. RightClick
-    if response == "":
-        data_set.append(-1)
-    else:
-        if re.findall(r"event.button ?== ?2", response.text):
-            data_set.append(1)
-        else:
             data_set.append(-1)
 
-    # 13. popUpWidnow
+
+    # 12. Right Click
     if response == "":
-        data_set.append(-1)
+        data_set.append(1)
+        # ?2 represents the number of clicks
+    else:
+        if re.findall(r"event.button ?== ?2", response.text):
+            data_set.append(-1)
+        else:
+            data_set.append(1)
+
+    # 13. popUpWindow
+    if response == "":
+        data_set.append(1)
+        #alert being pop up windows
     else:
         if re.findall(r"alert\(", response.text):
             data_set.append(1)
@@ -155,22 +152,22 @@ def generate_data_set(url):
 
     # 14. Iframe
     if response == "":
-        data_set.append(-1)
+        data_set.append(1)
     else:
         if re.findall(r"[<iframe>|<frameBorder>]", response.text):
-            data_set.append(1)
-        else:
             data_set.append(-1)
+        else:
+            data_set.append(1)
 
 
-    # 15. Page_Rank
+    # 15. Page_Rank, if rank is outside of 100,000, then potentially phishing
     try:
         if global_rank > 0 and global_rank < 100000:
             data_set.append(-1)
         else:
             data_set.append(1)
     except:
-        data_set.append(1)
+        data_set.append(-1)
 
 
 
