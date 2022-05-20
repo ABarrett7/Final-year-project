@@ -40,7 +40,7 @@ def getResult(url):
     #Determines whether the URL entered is phishing or legitmate
     try:
         prediction = clf.predict(X_new)
-        if prediction == -1:
+        if prediction == 1:
             return "Phishing Url"
         else:
             return "Legitimate Url"
